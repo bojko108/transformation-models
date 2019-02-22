@@ -1,0 +1,35 @@
+{
+  "name": "transformation-models",
+  "version": "1.0.0",
+  "description": "2D Affine and TPS transformations for use in geodesy",
+  "author": "bojko108 <bojko108@gmail.com>",
+  "main": "./dist/transformation-models.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bojko108/transformation-models.git"
+  },
+  "keywords": [
+    "transformations",
+    "Аffine",
+    "TPS"
+  ],
+  "scripts": {
+    "patch": "npm version patch --no-git-tag-version && npm run build",
+    "minor": "npm version minor --no-git-tag-version && npm run build",
+    "major": "npm version major --no-git-tag-version && npm run build",
+    "test": "mocha --watch --require babel-core/register ./tests/**/*.test.js",
+    "build": "rollup --config ./config/build.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015": "^6.24.1",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "rollup": "^0.54.0",
+    "rollup-plugin-cleanup": "^2.0.0",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-node-resolve": "^3.0.2"
+  }
+}

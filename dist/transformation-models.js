@@ -1,5 +1,5 @@
 /** 
- * transformation-models - v1.0.0
+ * transformation-models - v1.0.1
  * description: 2D Affine and TPS transformations for use in geodesy
  * author: bojko108 <bojko108@gmail.com>
  * 

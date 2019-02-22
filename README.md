@@ -1,6 +1,6 @@
 # Transformation Models
 
-The library can be used for calculating transformation parameters using 2D Affine or Thin Plate Splite (TPS) transformations.
+The library can be used for calculating transformation parameters using 2D Affine or Thin Plate Spline (TPS) transformations.
 
 ## Install
 

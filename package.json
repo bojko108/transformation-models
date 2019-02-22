@@ -1,6 +1,6 @@
 {
   "name": "transformation-models",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "2D Affine and TPS transformations for use in geodesy",
   "author": "bojko108 <bojko108@gmail.com>",
   "main": "./dist/transformation-models.js",

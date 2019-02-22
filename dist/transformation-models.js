@@ -1,11 +1,15 @@
 /** 
- * transformation-models - v1.0.1
+ * transformation-models - v1.0.2
  * description: 2D Affine and TPS transformations for use in geodesy
  * author: bojko108 <bojko108@gmail.com>
  * 
  * github: https://github.com/bojko108/transformation-models
  */
     
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
 class Transformation {
   constructor() {
     this._sourcePoints = [];
@@ -265,4 +269,5 @@ class TPS extends Transformation {
   }
 }
 
-export { Affine, TPS };
+exports.Affine = Affine;
+exports.TPS = TPS;

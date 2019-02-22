@@ -20,7 +20,7 @@ export default {
       name: details.name,
       banner: description,
       file: `dist/${details.name}.js`,
-      format: 'es'
+      format: 'cjs'
     }
   ],
   plugins: [nodeResolve(), commonjs(), cleanup()]

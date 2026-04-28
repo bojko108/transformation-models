@@ -32,6 +32,18 @@ export default class Transformation {
     this._inverseParameters = {};
   }
   /**
+   * Initializes the transformation with control points when provided.
+   * @protected
+   * @param {Array.<Number>} [sourcePoints]
+   * @param {Array.<Number>} [targetPoints]
+   * @return {undefined}
+   */
+  _initialize(sourcePoints, targetPoints) {
+    if (sourcePoints && targetPoints) {
+      this.calculate(sourcePoints, targetPoints);
+    }
+  }
+  /**
    * Get source points array
    * @public
    * @readonly
@@ -94,8 +106,26 @@ export default class Transformation {
     this._sourcePoints = sourcePoints;
     this._targetPoints = targetPoints;
 
-    this._forwardParameters = this.__calculateParameters(sourcePoints, targetPoints);
-    this._inverseParameters = this.__calculateParameters(targetPoints, sourcePoints);
+    this._forwardParameters = this._calculateParameters(sourcePoints, targetPoints);
+    this._inverseParameters = this._calculateParameters(targetPoints, sourcePoints);
+  }
+  /**
+   * Transforms a point from source to target.
+   * @public
+   * @param {!Array.<Number>} point
+   * @return {Array.<Number>}
+   */
+  forward(point) {
+    return this._apply(point, this._forwardParameters);
+  }
+  /**
+   * Transforms a point from target to source.
+   * @public
+   * @param {!Array.<Number>} point
+   * @return {Array.<Number>}
+   */
+  inverse(point) {
+    return this._apply(point, this._inverseParameters);
   }
   /**
    * Validate control point arrays.
@@ -130,5 +160,42 @@ export default class Transformation {
     if (!Number.isFinite(point[0]) || !Number.isFinite(point[1])) {
       throw new Error('Point coordinates must be finite numbers!');
     }
+  }
+  /**
+   * Ensures the transformation has enough control points.
+   * @protected
+   * @param {!Array.<Number>} points
+   * @param {!Number} minimum
+   * @return {undefined}
+   */
+  _requireMinimumPointCount(points, minimum) {
+    if (points.length < minimum) {
+      throw new Error(`Number of points must be at least ${minimum}!`);
+    }
+  }
+  /**
+   * Applies the given parameter set to a point.
+   * @protected
+   * @param {!Array.<Number>} point
+   * @param {!Object.<String,*>} parameters
+   * @return {Array.<Number>}
+   */
+  _apply(point, parameters) {
+    this._validatePoint(point);
+
+    if (this._isEmptyParameters(parameters)) {
+      return point;
+    }
+
+    return this._transform(point, parameters);
+  }
+  /**
+   * Checks whether a parameter object is empty.
+   * @protected
+   * @param {Object.<String,*>} parameters
+   * @return {Boolean}
+   */
+  _isEmptyParameters(parameters) {
+    return Object.keys(parameters).length === 0 && parameters.constructor === Object;
   }
 }

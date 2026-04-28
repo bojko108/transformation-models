@@ -12,30 +12,7 @@ export default class Helmert extends Transformation {
    */
   constructor(sourcePoints, targetPoints) {
     super();
-
-    if (sourcePoints && targetPoints) {
-      this.calculate(sourcePoints, targetPoints);
-    }
-  }
-  /**
-   * Transforms a point from source to target.
-   * @public
-   * @param {!Array.<Number>} point - array of coordinates - [Northing, Easting]
-   * @return {Array.<Number>}
-   */
-  forward(point) {
-    this._validatePoint(point);
-    return this.__transform(point, this._forwardParameters);
-  }
-  /**
-   * Transforms a point from target to source.
-   * @public
-   * @param {!Array.<Number>} point - array of coordinates - [Northing, Easting]
-   * @return {Array.<Number>}
-   */
-  inverse(point) {
-    this._validatePoint(point);
-    return this.__transform(point, this._inverseParameters);
+    this._initialize(sourcePoints, targetPoints);
   }
   /**
    * Transforms a point.
@@ -44,7 +21,7 @@ export default class Helmert extends Transformation {
    * @param {!Object.<String,*>} parameters
    * @return {Array.<Number>}
    */
-  __transform(point, parameters) {
+  _transform(point, parameters) {
     const x = parameters.tx + parameters.scaleCos * point[0] - parameters.scaleSin * point[1];
     const y = parameters.ty + parameters.scaleSin * point[0] + parameters.scaleCos * point[1];
 
@@ -57,10 +34,8 @@ export default class Helmert extends Transformation {
    * @param {!Array.<Number>} targetPoints
    * @return {Object.<String,*>}
    */
-  __calculateParameters(sourcePoints, targetPoints) {
-    if (sourcePoints.length < 2) {
-      throw new Error('Number of points must be at least 2!');
-    }
+  _calculateParameters(sourcePoints, targetPoints) {
+    this._requireMinimumPointCount(sourcePoints, 2);
 
     let designMatrix = [];
     let observations = [];

@@ -89,10 +89,46 @@ export default class Transformation {
    * @return {undefined}
    */
   calculate(sourcePoints, targetPoints) {
+    this._validateControlPoints(sourcePoints, targetPoints);
+
     this._sourcePoints = sourcePoints;
     this._targetPoints = targetPoints;
 
     this._forwardParameters = this.__calculateParameters(sourcePoints, targetPoints);
     this._inverseParameters = this.__calculateParameters(targetPoints, sourcePoints);
+  }
+  /**
+   * Validate control point arrays.
+   * @protected
+   * @param {!Array.<Number>} sourcePoints
+   * @param {!Array.<Number>} targetPoints
+   * @return {undefined}
+   */
+  _validateControlPoints(sourcePoints, targetPoints) {
+    if (!Array.isArray(sourcePoints) || !Array.isArray(targetPoints)) {
+      throw new Error('Source and target points must be arrays!');
+    }
+
+    if (sourcePoints.length !== targetPoints.length) {
+      throw new Error('Number of points do not match!');
+    }
+
+    sourcePoints.forEach(point => this._validatePoint(point));
+    targetPoints.forEach(point => this._validatePoint(point));
+  }
+  /**
+   * Validate a 2D point.
+   * @protected
+   * @param {!Array.<Number>} point
+   * @return {undefined}
+   */
+  _validatePoint(point) {
+    if (!Array.isArray(point) || point.length !== 2) {
+      throw new Error('Point must be a 2D coordinate pair!');
+    }
+
+    if (!Number.isFinite(point[0]) || !Number.isFinite(point[1])) {
+      throw new Error('Point coordinates must be finite numbers!');
+    }
   }
 }

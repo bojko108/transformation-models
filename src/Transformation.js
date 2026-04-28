@@ -128,6 +128,22 @@ export default class Transformation {
     return this._apply(point, this._inverseParameters);
   }
   /**
+   * Calculates forward RMS error on the fitted control points.
+   * @public
+   * @return {Object.<String,Number>}
+   */
+  forwardRMSError() {
+    return this._calculateRMSError(this._sourcePoints, this._targetPoints, this._forwardParameters);
+  }
+  /**
+   * Calculates inverse RMS error on the fitted control points.
+   * @public
+   * @return {Object.<String,Number>}
+   */
+  inverseRMSError() {
+    return this._calculateRMSError(this._targetPoints, this._sourcePoints, this._inverseParameters);
+  }
+  /**
    * Validate control point arrays.
    * @protected
    * @param {!Array.<Number>} sourcePoints
@@ -197,5 +213,40 @@ export default class Transformation {
    */
   _isEmptyParameters(parameters) {
     return Object.keys(parameters).length === 0 && parameters.constructor === Object;
+  }
+  /**
+   * Calculates RMS error for a parameter set and control-point pairs.
+   * @protected
+   * @param {!Array.<Number>} sourcePoints
+   * @param {!Array.<Number>} targetPoints
+   * @param {!Object.<String,*>} parameters
+   * @return {Object.<String,Number>}
+   */
+  _calculateRMSError(sourcePoints, targetPoints, parameters) {
+    if (sourcePoints.length === 0 || targetPoints.length === 0 || this._isEmptyParameters(parameters)) {
+      return { x: 0, y: 0, total: 0 };
+    }
+
+    let sumSquaredX = 0;
+    let sumSquaredY = 0;
+
+    for (let i = 0; i < sourcePoints.length; i++) {
+      const transformedPoint = this._transform(sourcePoints[i], parameters);
+      const deltaX = transformedPoint[0] - targetPoints[i][0];
+      const deltaY = transformedPoint[1] - targetPoints[i][1];
+
+      sumSquaredX += deltaX * deltaX;
+      sumSquaredY += deltaY * deltaY;
+    }
+
+    const pointCount = sourcePoints.length;
+    const rmsX = Math.sqrt(sumSquaredX / pointCount);
+    const rmsY = Math.sqrt(sumSquaredY / pointCount);
+
+    return {
+      x: rmsX,
+      y: rmsY,
+      total: Math.sqrt((sumSquaredX + sumSquaredY) / pointCount)
+    };
   }
 }

@@ -47,7 +47,7 @@ describe('Test Polynomial Transformation', () => {
   it('should transform forward', () => {
     const expected = [4732974.629, 492880.087];
     const result = polynomial.forward([4734064.359, 8615839.411]);
-    
+
     assert.closeTo(result[0], expected[0], DELTA);
     assert.closeTo(result[1], expected[1], DELTA);
   });
@@ -58,5 +58,20 @@ describe('Test Polynomial Transformation', () => {
     
     assert.closeTo(result[0], expected[0], DELTA);
     assert.closeTo(result[1], expected[1], DELTA);
+  });
+
+  it('should calculate RMS error', () => {
+    const forward = polynomial.forwardRMSError();
+    const inverse = polynomial.inverseRMSError();
+
+    assert.isAtLeast(forward.x, 0);
+    assert.isAtLeast(forward.y, 0);
+    assert.isAtLeast(forward.total, 0);
+    assert.closeTo(forward.total, Math.sqrt(forward.x * forward.x + forward.y * forward.y), 1e-9);
+
+    assert.isAtLeast(inverse.x, 0);
+    assert.isAtLeast(inverse.y, 0);
+    assert.isAtLeast(inverse.total, 0);
+    assert.closeTo(inverse.total, Math.sqrt(inverse.x * inverse.x + inverse.y * inverse.y), 1e-9);
   });
 });

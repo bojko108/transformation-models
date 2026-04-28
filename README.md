@@ -38,11 +38,31 @@ const transformation = new Affine(sourcePoints, targetPoints);
 
 transformation.forward([4734064.359, 8615839.411]);
 transformation.inverse([4732974.629, 492880.087]);
+transformation.forwardRMSError();
+transformation.inverseRMSError();
 ```
 
 - `sourcePoints` and `targetPoints` are arrays of 2D coordinates in the form `[Northing, Easting]`
 - `forward(point)` transforms from source to target
 - `inverse(point)` transforms from target to source
+- `forwardRMSError()` returns RMS fit error for the source-to-target control-point fit
+- `inverseRMSError()` returns RMS fit error for the target-to-source control-point fit
+
+RMS error methods return an object in the form:
+
+```js
+{
+  x: 0.0111,
+  y: 0.0088,
+  total: 0.0142
+}
+```
+
+Where:
+
+- `x` is the RMS error for the northing coordinate
+- `y` is the RMS error for the easting coordinate
+- `total` is the combined planar RMS error
 
 ## Transformation Types
 

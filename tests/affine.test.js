@@ -60,4 +60,19 @@ describe('Test Affine Transformation', () => {
     assert.closeTo(result[0], expected[0], DELTA);
     assert.closeTo(result[1], expected[1], DELTA);
   });
+
+  it('should calculate RMS error', () => {
+    const forward = affine.forwardRMSError();
+    const inverse = affine.inverseRMSError();
+
+    assert.isAtLeast(forward.x, 0);
+    assert.isAtLeast(forward.y, 0);
+    assert.isAtLeast(forward.total, 0);
+    assert.closeTo(forward.total, Math.sqrt(forward.x * forward.x + forward.y * forward.y), 1e-9);
+
+    assert.isAtLeast(inverse.x, 0);
+    assert.isAtLeast(inverse.y, 0);
+    assert.isAtLeast(inverse.total, 0);
+    assert.closeTo(inverse.total, Math.sqrt(inverse.x * inverse.x + inverse.y * inverse.y), 1e-9);
+  });
 });

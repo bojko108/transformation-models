@@ -44,4 +44,17 @@ describe('Test Helmert Transformation', () => {
     assert.closeTo(result[0], point[0], DELTA);
     assert.closeTo(result[1], point[1], DELTA);
   });
+
+  it('should calculate RMS error', () => {
+    const forward = helmert.forwardRMSError();
+    const inverse = helmert.inverseRMSError();
+
+    assert.closeTo(forward.x, 0, 1e-9);
+    assert.closeTo(forward.y, 0, 1e-9);
+    assert.closeTo(forward.total, 0, 1e-9);
+
+    assert.closeTo(inverse.x, 0, 1e-9);
+    assert.closeTo(inverse.y, 0, 1e-9);
+    assert.closeTo(inverse.total, 0, 1e-9);
+  });
 });

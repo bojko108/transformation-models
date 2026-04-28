@@ -60,4 +60,17 @@ describe('Test TPS Transformation', () => {
     assert.closeTo(result[0], expected[0], DELTA);
     assert.closeTo(result[1], expected[1], DELTA);
   });
+
+  it('should calculate RMS error', () => {
+    const forward = tps.forwardRMSError();
+    const inverse = tps.inverseRMSError();
+
+    assert.closeTo(forward.x, 0, 1e-5);
+    assert.closeTo(forward.y, 0, 1e-5);
+    assert.closeTo(forward.total, 0, 1e-5);
+
+    assert.closeTo(inverse.x, 0, 1e-5);
+    assert.closeTo(inverse.y, 0, 1e-5);
+    assert.closeTo(inverse.total, 0, 1e-5);
+  });
 });

@@ -13,28 +13,7 @@ export default class TPS extends Transformation {
    */
   constructor(sourcePoints, targetPoints) {
     super();
-
-    if (sourcePoints && targetPoints) {
-      this.calculate(sourcePoints, targetPoints);
-    }
-  }
-  /**
-   * Transforms a point from source to target
-   * @public
-   * @param {!Array.<Number>} point - array of coordinates - [Northing, Easting]
-   * @return {Array.<Number>}
-   */
-  forward(point) {
-    return this.__isEmpty(this._forwardParameters) ? point : this.__transform(point, this._forwardParameters);
-  }
-  /**
-   * Transforms a point from target to source
-   * @public
-   * @param {!Array.<Number>} point - array of coordinates - [Northing, Easting]
-   * @return {Array.<Number>}
-   */
-  inverse(point) {
-    return this.__isEmpty(this._forwardParameters) ? point : this.__transform(point, this._inverseParameters);
+    this._initialize(sourcePoints, targetPoints);
   }
   /**
    * Transforms a point
@@ -43,11 +22,11 @@ export default class TPS extends Transformation {
    * @param {!Object.<String,*>} parameters - TPS transformation parameters
    * @return {Array.<Number>}
    */
-  __transform(point, parameters) {
+  _transform(point, parameters) {
     let Xo = parameters.Xc[0] + parameters.Xc[1] * point[0] + parameters.Xc[2] * point[1],
       Yo = parameters.Yc[0] + parameters.Yc[1] * point[0] + parameters.Yc[2] * point[1];
     for (let r = 0; r < parameters.m; r++) {
-      const tmp = this.__kernelFunction(point[0], point[1], parameters.sourcePoints[r][0], parameters.sourcePoints[r][1]);
+      const tmp = this._kernelFunction(point[0], point[1], parameters.sourcePoints[r][0], parameters.sourcePoints[r][1]);
       Xo += parameters.Xc[r + 3] * tmp;
       Yo += parameters.Yc[r + 3] * tmp;
     }
@@ -60,9 +39,7 @@ export default class TPS extends Transformation {
    * @param {!Array.<Number>} targetPoints - array of points - [Northing, Easting]
    * @return {Object.<String,*>}
    */
-  __calculateParameters(sourcePoints, targetPoints) {
-    if (sourcePoints.length !== targetPoints.length) throw 'Number of points do not mach!';
-
+  _calculateParameters(sourcePoints, targetPoints) {
     const m = sourcePoints.length;
 
     // initialize a big zero matrix
@@ -83,7 +60,7 @@ export default class TPS extends Transformation {
     // the lower right part of the matrix
     for (let r = 0; r < m; r++) {
       for (let c = 0; c < m; c++) {
-        A[r + 3][c + 3] = this.__kernelFunction(sourcePoints[r][0], sourcePoints[r][1], sourcePoints[c][0], sourcePoints[c][1]);
+        A[r + 3][c + 3] = this._kernelFunction(sourcePoints[r][0], sourcePoints[r][1], sourcePoints[c][0], sourcePoints[c][1]);
         A[c + 3][r + 3] = A[r + 3][c + 3];
       }
     }
@@ -111,18 +88,9 @@ export default class TPS extends Transformation {
    * @param {!Number} y2 
    * @return {Number}
    */
-  __kernelFunction(x1, y1, x2, y2) {
+  _kernelFunction(x1, y1, x2, y2) {
     if (x1 == x2 && y1 == y2) return 0;
     const dist = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
     return dist * Math.log(dist);
-  }
-  /**
-   * Checks if an object has any properties
-   * @private
-   * @param {Object.<String,*>} obj 
-   * @return {Boolean}
-   */
-  __isEmpty(obj) {
-    return Object.keys(obj).length === 0 && obj.constructor === Object;
   }
 }

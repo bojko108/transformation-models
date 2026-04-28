@@ -32,6 +32,18 @@ export default class Transformation {
     this._inverseParameters = {};
   }
   /**
+   * Initializes the transformation with control points when provided.
+   * @protected
+   * @param {Array.<Number>} [sourcePoints]
+   * @param {Array.<Number>} [targetPoints]
+   * @return {undefined}
+   */
+  _initialize(sourcePoints, targetPoints) {
+    if (sourcePoints && targetPoints) {
+      this.calculate(sourcePoints, targetPoints);
+    }
+  }
+  /**
    * Get source points array
    * @public
    * @readonly
@@ -89,10 +101,101 @@ export default class Transformation {
    * @return {undefined}
    */
   calculate(sourcePoints, targetPoints) {
+    this._validateControlPoints(sourcePoints, targetPoints);
+
     this._sourcePoints = sourcePoints;
     this._targetPoints = targetPoints;
 
-    this._forwardParameters = this.__calculateParameters(sourcePoints, targetPoints);
-    this._inverseParameters = this.__calculateParameters(targetPoints, sourcePoints);
+    this._forwardParameters = this._calculateParameters(sourcePoints, targetPoints);
+    this._inverseParameters = this._calculateParameters(targetPoints, sourcePoints);
+  }
+  /**
+   * Transforms a point from source to target.
+   * @public
+   * @param {!Array.<Number>} point
+   * @return {Array.<Number>}
+   */
+  forward(point) {
+    return this._apply(point, this._forwardParameters);
+  }
+  /**
+   * Transforms a point from target to source.
+   * @public
+   * @param {!Array.<Number>} point
+   * @return {Array.<Number>}
+   */
+  inverse(point) {
+    return this._apply(point, this._inverseParameters);
+  }
+  /**
+   * Validate control point arrays.
+   * @protected
+   * @param {!Array.<Number>} sourcePoints
+   * @param {!Array.<Number>} targetPoints
+   * @return {undefined}
+   */
+  _validateControlPoints(sourcePoints, targetPoints) {
+    if (!Array.isArray(sourcePoints) || !Array.isArray(targetPoints)) {
+      throw new Error('Source and target points must be arrays!');
+    }
+
+    if (sourcePoints.length !== targetPoints.length) {
+      throw new Error('Number of points do not match!');
+    }
+
+    sourcePoints.forEach(point => this._validatePoint(point));
+    targetPoints.forEach(point => this._validatePoint(point));
+  }
+  /**
+   * Validate a 2D point.
+   * @protected
+   * @param {!Array.<Number>} point
+   * @return {undefined}
+   */
+  _validatePoint(point) {
+    if (!Array.isArray(point) || point.length !== 2) {
+      throw new Error('Point must be a 2D coordinate pair!');
+    }
+
+    if (!Number.isFinite(point[0]) || !Number.isFinite(point[1])) {
+      throw new Error('Point coordinates must be finite numbers!');
+    }
+  }
+  /**
+   * Ensures the transformation has enough control points.
+   * @protected
+   * @param {!Array.<Number>} points
+   * @param {!Number} minimum
+   * @return {undefined}
+   */
+  _requireMinimumPointCount(points, minimum) {
+    if (points.length < minimum) {
+      throw new Error(`Number of points must be at least ${minimum}!`);
+    }
+  }
+  /**
+   * Applies the given parameter set to a point.
+   * @protected
+   * @param {!Array.<Number>} point
+   * @param {!Object.<String,*>} parameters
+   * @return {Array.<Number>}
+   */
+  _apply(point, parameters) {
+    this._validatePoint(point);
+
+    if (this._isEmptyParameters(parameters)) {
+      return point;
+    }
+
+    return this._transform(point, parameters);
+  }
+  /**
+   * Checks whether a parameter object is empty.
+   * @protected
+   * @param {Object.<String,*>} parameters
+   * @return {Boolean}
+   */
+  _isEmptyParameters(parameters) {
+    return Object.keys(parameters).length === 0 && parameters.constructor === Object;
   }
 }

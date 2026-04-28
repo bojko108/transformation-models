@@ -1,7 +1,7 @@
 {
   "name": "transformation-models",
-  "version": "1.0.2",
-  "description": "2D Affine and TPS transformations for use in geodesy",
+  "version": "2.0.0",
+  "description": "2D Affine, Helmert, Polynomial and TPS transformations for use in geodesy",
   "author": "bojko108 <bojko108@gmail.com>",
   "main": "./dist/transformation-models.js",
   "repository": {
@@ -11,6 +11,8 @@
   "keywords": [
     "transformations",
     "Аffine",
+    "Helmert",
+    "Polynomial",
     "TPS"
   ],
   "scripts": {

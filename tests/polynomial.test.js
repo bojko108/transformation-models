@@ -2,48 +2,61 @@ import { Polynomial } from '../src/main';
 import { assert } from 'chai';
 
 describe('Test Polynomial Transformation', () => {
-  const DELTA = 0.000001;
-  const xCoefficients = [100, 1.25, -0.7, 0.02, 0.005, -0.01];
-  const yCoefficients = [-50, 0.6, 1.4, -0.015, 0.01, 0.025];
-
-  function transform(point) {
-    const x = point[0];
-    const y = point[1];
-    const basis = [1, x, y, x * x, x * y, y * y];
-
-    return [
-      basis.reduce((sum, term, index) => sum + term * xCoefficients[index], 0),
-      basis.reduce((sum, term, index) => sum + term * yCoefficients[index], 0)
-    ];
-  }
-
+  const DELTA = 0.05; // 5cm
   const sourcePoints = [
-    [0, 0],
-    [1, 0],
-    [0, 1],
-    [1, 1],
-    [2, 1],
-    [1, 2]
+    [4734563.812, 8602649.049],
+    [4725349.627, 8610759.665],
+    [4723443.326, 8616104.954],
+    [4721845.431, 8622312.598],
+    [4720159.801, 8603248.973],
+    [4718040.498, 8608875.072],
+    [4716553.179, 8620405.969],
+    [4724628.766, 8631596.47],
+    [4724538.865, 8629857.48],
+    [4751688.217, 8617662.209],
+    [4746994.861, 8621675.591],
+    [4746480.919, 8608375.672],
+    [4741551.591, 8615165.917],
+    [4734308.135, 8616623.423],
+    [4744231.665, 8630246.732],
+    [4736133.859, 8630921.615],
+    [4732346.726, 8627234.144]
   ];
-  const targetPoints = sourcePoints.map(transform);
+  const targetPoints = [
+    [4733708.335, 479703.427],
+    [4724353.409, 487647.473],
+    [4722352.973, 492956.916],
+    [4720645.585, 499133.77],
+    [4719298.709, 480047.397],
+    [4717080.395, 485633.91],
+    [4715389.251, 497134.073],
+    [4723263.059, 508463.146],
+    [4723204.053, 506723.307],
+    [4750559.251, 495015.878],
+    [4745796.219, 498944.058],
+    [4745519.337, 485640.022],
+    [4740470.969, 492340.007],
+    [4733204.376, 493668.131],
+    [4742881.509, 507462.453],
+    [4734775.168, 507992.948],
+    [4731055.189, 504239.725]
+  ];
 
   const polynomial = new Polynomial(sourcePoints, targetPoints, 2);
 
   it('should transform forward', () => {
-    const point = [1.5, 0.5];
-    const expected = transform(point);
-    const result = polynomial.forward(point);
-
+    const expected = [4732974.629, 492880.087];
+    const result = polynomial.forward([4734064.359, 8615839.411]);
+    
     assert.closeTo(result[0], expected[0], DELTA);
     assert.closeTo(result[1], expected[1], DELTA);
   });
 
-  it('should transform inverse for control points', () => {
-    const sourcePoint = sourcePoints[4];
-    const targetPoint = targetPoints[4];
-    const result = polynomial.inverse(targetPoint);
-
-    assert.closeTo(result[0], sourcePoint[0], DELTA);
-    assert.closeTo(result[1], sourcePoint[1], DELTA);
+  it('should transform inverse', () => {
+    const expected = [4734064.359, 8615839.411];
+    const result = polynomial.inverse([4732974.629, 492880.087]);
+    
+    assert.closeTo(result[0], expected[0], DELTA);
+    assert.closeTo(result[1], expected[1], DELTA);
   });
 });

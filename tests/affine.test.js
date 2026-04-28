@@ -48,7 +48,7 @@ describe('Test Affine Transformation', () => {
   it('should transform forward', () => {
     const expected = [4732974.629, 492880.087];
     const result = affine.forward([4734064.359, 8615839.411]);
-
+    
     assert.closeTo(result[0], expected[0], DELTA);
     assert.closeTo(result[1], expected[1], DELTA);
   });
@@ -56,7 +56,7 @@ describe('Test Affine Transformation', () => {
   it('should transform inverse', () => {
     const expected = [4734064.359, 8615839.411];
     const result = affine.inverse([4732974.629, 492880.087]);
-
+    
     assert.closeTo(result[0], expected[0], DELTA);
     assert.closeTo(result[1], expected[1], DELTA);
   });

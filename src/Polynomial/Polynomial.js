@@ -68,7 +68,8 @@ export default class Polynomial extends Transformation {
    * @return {Array.<Number>}
    */
   __transform(point, parameters) {
-    const basis = this.__buildBasis(point, parameters.order);
+    const normalizedPoint = this.__normalizePoint(point, parameters.normalization);
+    const basis = this.__buildBasis(normalizedPoint, parameters.order);
 
     return [
       this.__dotProduct(basis, parameters.xCoefficients),
@@ -89,15 +90,63 @@ export default class Polynomial extends Transformation {
       throw new Error(`Number of points must be at least ${coefficientCount}!`);
     }
 
-    const designMatrix = sourcePoints.map(point => this.__buildBasis(point, this.order));
+    const normalization = this.__createNormalization(sourcePoints);
+    const designMatrix = sourcePoints.map(point => {
+      const normalizedPoint = this.__normalizePoint(point, normalization);
+      return this.__buildBasis(normalizedPoint, this.order);
+    });
     const xCoefficients = solveLeastSquares(designMatrix, targetPoints.map(point => point[0]));
     const yCoefficients = solveLeastSquares(designMatrix, targetPoints.map(point => point[1]));
 
     return {
       order: this.order,
+      normalization,
       xCoefficients,
       yCoefficients
     };
+  }
+  /**
+   * Creates normalization parameters for the input points.
+   * @private
+   * @param {!Array.<Number>} points
+   * @return {Object.<String,*>}
+   */
+  __createNormalization(points) {
+    const centroid = points.reduce(
+      (result, point) => [result[0] + point[0], result[1] + point[1]],
+      [0, 0]
+    ).map(value => value / points.length);
+
+    let maxDistance = 0;
+
+    for (let i = 0; i < points.length; i++) {
+      const dx = points[i][0] - centroid[0];
+      const dy = points[i][1] - centroid[1];
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance > maxDistance) {
+        maxDistance = distance;
+      }
+    }
+
+    return {
+      xOffset: centroid[0],
+      yOffset: centroid[1],
+      scale: maxDistance === 0 ? 1 : maxDistance
+    };
+  }
+  /**
+   * Normalizes a point using centering and scale.
+   * @private
+   * @param {!Array.<Number>} point
+   * @param {!Object.<String,*>} normalization
+   * @return {Array.<Number>}
+   */
+  __normalizePoint(point, normalization) {
+    return [
+      (point[0] - normalization.xOffset) / normalization.scale,
+      (point[1] - normalization.yOffset) / normalization.scale
+    ];
   }
   /**
    * Builds polynomial basis terms up to the requested order.
